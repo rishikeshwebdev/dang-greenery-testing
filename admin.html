@@ -97,7 +97,7 @@
         .select("user_id")
         .eq("user_id", data.user.id)
         .maybeSingle();
-
+      console.log("Admin check:", { admin, adminError, userId: data.user.id });
       if (adminError || !admin) {
         await supabase.auth.signOut();
         message.textContent = "This account is not an authorized admin.";
