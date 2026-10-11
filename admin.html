@@ -104,7 +104,21 @@
         return;
       }
 
-      message.textContent = "Login successful! Admin access verified.";
+     message.textContent = "Login successful! Opening dashboard...";
+
+document.querySelector(".container").innerHTML = `
+  <h1>Admin Dashboard</h1>
+  <p>Welcome to The Dang Greenery</p>
+  <button onclick="location.reload()">Logout</button>
+  <hr>
+  <h3>Manage Website</h3>
+  <p>Food Menu Manager</p>
+  <p>Dangi Products Manager</p>
+  <p>Gallery Manager</p>
+  <p>Offers Manager</p>
+  <p>Feedback & Complaints</p>
+  <p>Contact Details</p>
+`;
     });
   </script>
 </body>
