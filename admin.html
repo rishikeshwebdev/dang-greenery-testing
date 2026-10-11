@@ -1,0 +1,111 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Dang Greenery | Admin Panel</title>
+  <style>
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      font-family: Arial, sans-serif;
+      background: #f3f6f1;
+      color: #203b2b;
+    }
+    .container {
+      max-width: 430px;
+      margin: 70px auto;
+      padding: 28px;
+      background: white;
+      border-radius: 16px;
+      box-shadow: 0 8px 30px #00000012;
+    }
+    h1 { margin-bottom: 8px; }
+    p { color: #657568; line-height: 1.5; }
+    label { display: block; margin: 18px 0 7px; }
+    input {
+      width: 100%;
+      padding: 13px;
+      border: 1px solid #ccd6cd;
+      border-radius: 8px;
+      font-size: 15px;
+    }
+    button {
+      width: 100%;
+      padding: 13px;
+      margin-top: 20px;
+      background: #245c38;
+      color: white;
+      border: 0;
+      border-radius: 8px;
+      font-size: 16px;
+      cursor: pointer;
+    }
+    #message { margin-top: 15px; font-size: 14px; }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h1>Admin Login</h1>
+    <p>The Dang Greenery<br>Manage your website securely.</p>
+
+    <form id="loginForm">
+      <label for="email">Email Address</label>
+      <input id="email" type="email" required
+             placeholder="Enter admin email">
+
+      <label for="password">Password</label>
+      <input id="password" type="password" required
+             placeholder="Enter password">
+
+      <button type="submit">Login</button>
+      <div id="message" role="status"></div>
+    </form>
+  </div>
+
+  <script type="module">
+    import { createClient } from
+      "https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/+esm";
+
+    const SUPABASE_URL = "https://mgnirlbsckqmnjkhexzk.supabase.co";
+    const SUPABASE_KEY = "sb_publishable_J8J92CQvgDd9WKXI5QvMwQ_B48gOOX5";
+
+    const supabase = createClient(SUPABASE_URL, SUPABASE_KEY);
+    const form = document.getElementById("loginForm");
+    const message = document.getElementById("message");
+
+    form.addEventListener("submit", async (event) => {
+      event.preventDefault();
+      message.textContent = "Checking login...";
+
+      const email = document.getElementById("email").value.trim();
+      const password = document.getElementById("password").value;
+
+      const { data, error } = await supabase.auth.signInWithPassword({
+        email,
+        password
+      });
+
+      if (error) {
+        message.textContent = "Login failed: " + error.message;
+        return;
+      }
+
+      const { data: admin, error: adminError } = await supabase
+        .from("admin_users")
+        .select("user_id")
+        .eq("user_id", data.user.id)
+        .maybeSingle();
+
+      if (adminError || !admin) {
+        await supabase.auth.signOut();
+        message.textContent = "This account is not an authorized admin.";
+        return;
+      }
+
+      message.textContent = "Login successful! Admin access verified.";
+    });
+  </script>
+</body>
+</html>
